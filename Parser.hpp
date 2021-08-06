@@ -8,7 +8,7 @@ class Parser {
 	
 	public:
 		
-		static auto parse_command(std::string& input, fs::path const& current_path) -> bool {
+		static auto parse_command(std::string& input, fs::path& current_path) -> bool {
 
 			if (input.starts_with("cd")) {
 				CommandHandler::cd_command(input);
@@ -16,7 +16,7 @@ class Parser {
 			}
 			
 			if (input.starts_with("ls")) {
-				CommandHandler::ls_command(input, current_path);
+				CommandHandler::ls_command(current_path);
 				return true;
 			}
 

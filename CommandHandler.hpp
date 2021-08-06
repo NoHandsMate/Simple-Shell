@@ -4,7 +4,9 @@
 #include <iostream>
 #include <iomanip>
 #include <fstream>
-#include <csignal>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
 namespace fs = std::filesystem;
 
@@ -30,23 +32,30 @@ class CommandHandler {
 			}
 		}
 
-		static auto ls_command(std::string& command, fs::path const& current_path) -> void {
+		static auto ls_command(fs::path& current_path) -> void {
 			
-			command.erase(0, 3); // Removes "ls"
+			auto child_pid = fork();
 			
-			short i = 0;
+			int status = 0;
 
-			for (auto const& file : fs::directory_iterator(current_path)) {
-				
-				if (i % 3 == 0) {
-					std::cout << '\n';
-					i = 0;
-				}
-				i++;
-				std::cout << std::setw(32) << std::left << file.path().filename().string() << " ";
-
+			if (child_pid == -1) {
+				std::cout << "CANT FORK (ls)" << '\n';
+				return;
 			}
-			
+
+			else if (child_pid == 0) {
+				char* args[] = {"./commands_src/ls/bin/ls", const_cast<char*>(current_path.c_str()), NULL};
+				if( execv("./commands_src/ls/bin/ls", args) == -1 ) {
+					std::cerr << "ERROR CALLING ls " << '\n';
+					return;
+				}
+			} else {
+				if (waitpid(child_pid, &status, 0) > 0) {
+					if (WIFEXITED(status) && !WEXITSTATUS(status)) {
+						std::cout << "SUCCESSFUL EXECUTED" << '\n';
+					}
+				}
+			}
 		}
 
 		static auto cat_command(std::string& command) -> void {
