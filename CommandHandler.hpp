@@ -1,12 +1,12 @@
 #pragma once
 
+#include "Process.hpp"
 #include <filesystem>
 #include <iostream>
 #include <iomanip>
 #include <fstream>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/wait.h>
+#include <cstring>
+#include <memory>
 
 namespace fs = std::filesystem;
 
@@ -34,28 +34,33 @@ class CommandHandler {
 
 		static auto ls_command(fs::path& current_path) -> void {
 			
-			auto child_pid = fork();
 			
-			int status = 0;
+			const std::string path = "./commands_src/ls/bin/ls";
+			
+			std::array<char*, 3> args = {const_cast<char*>(path.c_str()), const_cast<char*>(current_path.c_str()), NULL};			
+			
+			auto process = Process<3>(path, args);
 
-			if (child_pid == -1) {
-				std::cout << "CANT FORK (ls)" << '\n';
-				return;
-			}
-
-			else if (child_pid == 0) {
-				char* args[] = {"./commands_src/ls/bin/ls", const_cast<char*>(current_path.c_str()), NULL};
-				if( execv("./commands_src/ls/bin/ls", args) == -1 ) {
-					std::cerr << "ERROR CALLING ls " << '\n';
+			switch(process.createProcess()) {
+				case RETURN_STATUS::FORK_ERROR:
+					std::cout << "FORK ERROR" << '\n';
 					return;
-				}
-			} else {
-				if (waitpid(child_pid, &status, 0) > 0) {
-					if (WIFEXITED(status) && !WEXITSTATUS(status)) {
-						std::cout << "SUCCESSFUL EXECUTED" << '\n';
-					}
-				}
+					break;
+				case RETURN_STATUS::EXE_ERROR:
+					std::cout << "CALLING ls FAILED" << '\n';
+					return;
+					break;
+				case RETURN_STATUS::EXE_SUCCESS:
+					return;
+					break;
+				case RETURN_STATUS::NONE:
+					std::cout << "SOMETHING WRONG CALLING ls " << '\n';
+					return;
+					break;
+				default:
+					return;	
 			}
+
 		}
 
 		static auto cat_command(std::string& command) -> void {
