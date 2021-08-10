@@ -43,7 +43,7 @@ class CommandHandler {
 
 			switch(process.createProcess()) {
 				case RETURN_STATUS::FORK_ERROR:
-					std::cout << "FORK ERROR" << '\n';
+					std::cout << "FORK ERROR -> ls" << '\n';
 					return;
 					break;
 				case RETURN_STATUS::EXE_ERROR:
@@ -54,7 +54,6 @@ class CommandHandler {
 					return;
 					break;
 				case RETURN_STATUS::NONE:
-					std::cout << "SOMETHING WRONG CALLING ls " << '\n';
 					return;
 					break;
 				default:
@@ -66,19 +65,30 @@ class CommandHandler {
 		static auto cat_command(std::string& command) -> void {
 			command.erase(0, 4); // Removes "cat"
 			
-			auto file = std::ifstream(command);
-			
-			if(!file) {
-				std::cout << "Couldn't open the file";
-			}
-			
-			std::string content = {};
+			const std::string path = "./commands_src/cat/bin/cat";
 
-			while(getline(file, content)) {
-				std::cout << content << '\n';
-			}
+			std::array<char*, 3> args = {const_cast<char*>(path.c_str()), const_cast<char*>(command.c_str()), NULL};
+			auto process = Process<3>(path, args);
 
-			file.close();
+			switch(process.createProcess()) {
+				
+				case RETURN_STATUS::FORK_ERROR:
+					std::cout << "FORK ERROR -> cat" << '\n';
+					return;
+					break;
+				case RETURN_STATUS::EXE_ERROR:
+					std::cout << "CALLING cat FAILED" << '\n';
+					return;
+					break;
+				case RETURN_STATUS::EXE_SUCCESS:
+					return;
+					break;
+				case RETURN_STATUS::NONE:
+					return;
+					break;
+				default:
+					return;	
+			}
 
 		}
 
