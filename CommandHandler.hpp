@@ -37,11 +37,9 @@ class CommandHandler {
 			
 			const std::string path = "./commands_src/ls/bin/ls";
 			
-			std::array<char*, 3> args = {const_cast<char*>(path.c_str()), const_cast<char*>(current_path.c_str()), NULL};			
-			
-			auto process = Process<3>(path, args);
+			auto process = Process(path);
 
-			switch(process.createProcess()) {
+			switch(process.createProcess(current_path.string())) {
 				case RETURN_STATUS::FORK_ERROR:
 					std::cout << "FORK ERROR -> ls" << '\n';
 					return;
@@ -67,10 +65,8 @@ class CommandHandler {
 			
 			const std::string path = "./commands_src/cat/bin/cat";
 
-			std::array<char*, 3> args = {const_cast<char*>(path.c_str()), const_cast<char*>(command.c_str()), NULL};
-			auto process = Process<3>(path, args);
-
-			switch(process.createProcess()) {
+			auto process = Process(path);
+			switch(process.createProcess(command)) {
 				
 				case RETURN_STATUS::FORK_ERROR:
 					std::cout << "FORK ERROR -> cat" << '\n';
@@ -91,7 +87,6 @@ class CommandHandler {
 			}
 
 		}
-
 
 	private:
 		CommandHandler() {}

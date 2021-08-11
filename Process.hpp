@@ -3,8 +3,9 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include <array>
 #include <string>
+#include <type_traits>
+#include <concepts>
 
 enum class RETURN_STATUS {
 	FORK_ERROR,
@@ -14,34 +15,36 @@ enum class RETURN_STATUS {
 };
 
 
+template<typename T>
+concept ArgType = std::same_as<T, std::string>;
 
-template<size_t arg_count>
+
 class Process {
 	
 	public:
 		
 		Process() = delete;
 
-		Process(std::string const& exe_path, std::array<char*, arg_count> const& args)
-			: m_path(exe_path), m_arg(args) {}
+		Process(std::string const& exe_path)
+			: m_path(exe_path) {}
 
-		Process(std::string&& exe_path, std::array<char*, arg_count>&& args)
-			: m_path(std::move(exe_path), m_args(std::move(args))) {}
+		Process(std::string&& exe_path)
+			: m_path(std::move(exe_path)) {}
+		
 
-		constexpr auto createProcess() -> RETURN_STATUS {
-			
+		template<ArgType... T>
+		constexpr auto createProcess(T const&... args) -> RETURN_STATUS {
+
 			m_pid = fork();
 
 			if (m_pid == -1) 
 				return RETURN_STATUS::FORK_ERROR;
 
 			if(m_pid == 0) {
-		
-				// CHILD PROCESS
-		
-				if (execv(m_path.c_str(), m_arg.data()) == -1)
+					
+				if (execl(m_path.c_str(), args.c_str() ..., (char*)NULL) == -1)
 					return RETURN_STATUS::EXE_ERROR;
-	
+		
 			} else {
 				// PARENT PROCESS
 
@@ -53,10 +56,10 @@ class Process {
 
 			return RETURN_STATUS::NONE;
 		}
+		
 
 	private:
 		pid_t m_pid{};
 		int m_status{};
 		std::string m_path;
-		std::array<char*, arg_count> m_arg;
 };
