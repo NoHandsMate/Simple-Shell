@@ -1,11 +1,13 @@
 #pragma once
 
 #include <unistd.h>
+#include <csignal>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <string>
 #include <type_traits>
 #include <concepts>
+#include <iostream>
 
 enum class RETURN_STATUS {
 	FORK_ERROR,
@@ -14,10 +16,8 @@ enum class RETURN_STATUS {
 	NONE
 };
 
-
 template<typename T>
 concept ArgType = std::same_as<T, std::string>;
-
 
 class Process {
 	
@@ -41,13 +41,15 @@ class Process {
 				return RETURN_STATUS::FORK_ERROR;
 
 			if(m_pid == 0) {
-					
-				if (execl(m_path.c_str(), args.c_str() ..., (char*)NULL) == -1)
+			
+
+				if (execl(m_path.c_str(), args.c_str() ..., (char*)NULL) == -1) {
 					return RETURN_STATUS::EXE_ERROR;
+				}
 		
 			} else {
 				// PARENT PROCESS
-
+				
 				if (waitpid(m_pid, &m_status, 0) > 0)
 					if (WIFEXITED(m_status) && !WEXITSTATUS(m_status)) {
 						return RETURN_STATUS::EXE_SUCCESS;
@@ -59,6 +61,7 @@ class Process {
 		
 
 	private:
+
 		pid_t m_pid{};
 		int m_status{};
 		std::string m_path;

@@ -5,6 +5,7 @@
 #include <iostream>
 #include <cstdlib>
 
+
 auto main() -> int {
 	
 	std::cout << "-- Simple Shell --" <<'\n';
@@ -13,11 +14,13 @@ auto main() -> int {
 	
 	while(true) {
 		
+			
+
 		std::cout << '\n';
 			
 		auto current_path = fs::current_path();
 //		auto current_relative_path = current_path.relative_path();
-
+		
 		std::cout << current_path.string() << " " <<"> ";	
 		
 		user_input.clear();

@@ -8,8 +8,8 @@ int main(int argc, char** argv) {
 		
 	short i = 0;
 	
-	fs::path const current_path = argv[1];
-
+	fs::path const current_path = argv[0];
+	
 	for (auto const& file : fs::directory_iterator(current_path)) {
 
 		if (i % 3 == 0) {
