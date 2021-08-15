@@ -23,5 +23,4 @@ Some commands are written using the filesystem library, other are implemented fr
 
 # Limitations
 
-- cat won't work if no file is specified. That's because std::cin blocks signal catching
 - cd if no dir is specified does nothing. In the future this behavior will change to work like the "real" cd
