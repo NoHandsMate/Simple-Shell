@@ -1,7 +1,5 @@
 # Simple-Shell
-A simple linux shell written in C++
-
-Some commands are written using the filesystem library, other are implemented from scratch. 
+A simple linux shell written in C++, where all the commands are implemented from scratch.  
 
 # Commands to implement
 - [x] ls
