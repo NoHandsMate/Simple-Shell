@@ -8,7 +8,7 @@ Some commands are written using the filesystem library, other are implemented fr
 - [x] cd
 - [x] pwd
 - [x] cat
-- [ ] mkdir
+- [x] mkdir
 - [ ] rm
 - [ ] mv
 - [ ] cp
