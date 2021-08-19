@@ -88,7 +88,54 @@ class CommandHandler {
 
 		}
 
+		static auto mkdir_command(std::string& command) -> void {
+			command.erase(0, 6); //Removes "mkdir"
+
+			const std::string path = std::getenv("MKDIR_DIR");
+
+			auto process = Process(path);
+
+			switch(process.createProcess(command)) {
+
+				case RETURN_STATUS::FORK_ERROR:
+					std::cout << "FORK ERROR -> mkdir" << '\n';
+					return;
+					break;
+				case RETURN_STATUS::EXE_ERROR:
+					std::cout << "CALLING mkdir FAILED" << '\n';
+					return;
+					break;
+				case RETURN_STATUS::EXE_SUCCESS:
+					return;
+					break;
+				case RETURN_STATUS::NONE:
+					return;
+					break;
+				default:
+					return;	
+			}
+
+		}
+
 	private:
 		CommandHandler() {}
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

@@ -31,6 +31,7 @@ class Parser {
 			}
 
 			if (input.starts_with("mkdir")) {
+				CommandHandler::mkdir_command(input);
 				return true;
 			}
 
